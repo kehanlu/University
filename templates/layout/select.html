@@ -1,0 +1,75 @@
+<div class="tabs is-boxed">
+  <ul>
+    <li class="tab is-active" onclick="openTab(event,'pub_u')">
+      <a>
+        <span>公立大學</span>
+      </a>
+    </li>
+    <li class="tab" onclick="openTab(event,'pub_t')">
+      <a>
+        <span>公立科大</span>
+      </a>
+    </li>
+    <li class="tab" onclick="openTab(event,'pri_u')">
+      <a>
+        <span>私立大學</span>
+      </a>
+    </li>
+    <li class="tab" onclick="openTab(event,'pri_t')">
+      <a>
+        <span>私立科大</span>
+      </a>
+    </li>
+  </ul>
+</div>
+
+<div class="content-tab" id="pub_u">
+  {% for u in pub_u%}
+  <span class="university"><input type="checkbox" class="university" value="{{u.edu_id}}"> {{u.name}}</span>
+  {% endfor %}
+</div>
+
+<div class="content-tab" id="pub_t" style="display: none">
+  {% for u in pub_t%}
+  <span class="university"><input type="checkbox" class="university" value="{{u.edu_id}}"> {{u.name}}</span>
+  {% endfor %}
+</div>
+
+<div class="content-tab" id="pri_u" style="display: none">
+  {% for u in pri_u%}
+  <span class="university"><input type="checkbox" class="university" value="{{u.edu_id}}"> {{u.name}}</span>
+  {% endfor %}
+</div>
+
+<div class="content-tab" id="pri_t" style="display: none">
+  {% for u in pri_t%}
+  <span class="university"><input type="checkbox" class="university" value="{{u.edu_id}}"> {{u.name}}</span>
+  {% endfor %}
+</div>
+
+<a class="button is-warning" onclick="clearAllSelect()">清除選取</a>
+
+<script>
+  function openTab(evt, tabName) {
+    var i, x, tablinks;
+    x = document.getElementsByClassName("content-tab");
+    for (i = 0; i < x.length; i++) {
+      x[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tab");
+    for (i = 0; i < x.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace("is-active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " is-active";
+  }
+
+  function clearAllSelect() {
+    Array.from(document.getElementsByClassName("university")).forEach(e => {
+      e.checked = false;
+    });
+    while (schoolDetail.firstChild) {
+      schoolDetail.removeChild(schoolDetail.firstChild);
+    }
+  }
+</script>

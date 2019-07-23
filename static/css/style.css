@@ -1,0 +1,23 @@
+span.unit {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+p.description {
+    padding: 10px 30px 30px 30px;
+}
+
+span.university {
+    display: inline-block;
+    padding: 5px;
+    font-size: 14px;
+    width: 200px;
+}
+
+.navbar-brand {
+    height: auto;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}

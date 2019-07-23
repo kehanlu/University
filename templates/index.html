@@ -1,0 +1,338 @@
+{% extends 'layout/base.html'%}
+{% load static %}
+
+{% block content %}
+
+{% include 'layout/select.html'%}
+<div id="school-compare" style="display: none;">
+  <div class="notification" style="margin: 20px;">
+    <div class="columns has-text-centered">
+      <div class="column is-one-third">
+        <p class="title is-5">領域相似度</p>
+        <canvas id="pie-field"></canvas>
+      </div>
+      <div class="column is-one-third">
+        <p class="title is-5">學門相似度</p>
+        <canvas id="pie-discipline"></canvas>
+      </div>
+      <div class="column is-one-third">
+        <p class="title is-5">學類相似度</p>
+        <canvas id="pie-category"></canvas>
+      </div>
+    </div>
+    <a class="button is-link" onclick="toogleDetail()">詳細資料</a>
+    <div id="detail" class="columns" style="display: none;margin-top:40px;">
+      <div class="column is-one-third">
+        <div class="columns">
+          <div class="column">
+            <h1 class="title is-6">相同</h1>
+            <div id="field-same"></div>
+          </div>
+          <div class="column">
+            <h1 class="title is-6">不同</h1>
+            <div id="field-different"></div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="columns">
+          <div class="column">
+            <h1 class="title is-6">相同</h1>
+            <div id="discipline-same"></div>
+          </div>
+          <div class="column">
+            <h1 class="title is-6">不同</h1>
+            <div id="discipline-different"></div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="columns">
+          <div class="column">
+            <h1 class="title is-6">相同</h1>
+            <div id="category-same"></div>
+          </div>
+          <div class="column">
+            <h1 class="title is-6">不同</h1>
+            <div id="category-different"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div id="school-detail"></div>
+
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+
+<script>
+  function selectedSchools() {
+    let l = new Array();
+    Array.from(document.getElementsByClassName("university")).forEach(e => {
+      if (e.checked) {
+        l.push(e.value);
+      }
+    })
+    let s = "";
+    for (let i = 0; i < l.length; i++) {
+      s += l[i];
+      if (i != l.length - 1)
+        s += ",";
+    }
+    if (l.length > 1) {
+      document.getElementById("school-compare").style.display = "block";
+
+      fetch("/api/school/compare?data=" + s).then(resp => {
+        return resp.json();
+      }).then(data => {
+        var pies = ["field", "discipline", "category"];
+        for (let i = 0; i < pies.length; i++) {
+          var ctx = document.getElementById(`pie-${pies[i]}`);
+          var new_canvas = document.createElement("canvas")
+
+          new_canvas.id = `pie-${pies[i]}`
+          ctx.after(new_canvas);
+          ctx.remove();
+          ctx = new_canvas;
+
+          var myDoughnutChart = new Chart(ctx, doughnutConfig(
+            data["same"][pies[i]].length, data["different"][pies[i]].length));
+
+          while (document.getElementById(pies[i] + "-same").firstChild) {
+            document.getElementById(pies[i] + "-same").removeChild(document.getElementById(pies[i] + "-same")
+              .firstChild);
+          }
+          while (document.getElementById(pies[i] + "-different").firstChild) {
+            document.getElementById(pies[i] + "-different").removeChild(document.getElementById(pies[i] +
+              "-different").firstChild);
+          }
+
+          // text
+          for (let j = 0; j < data["same"][pies[i]].length; j++) {
+            var node = document.createElement("p");
+            node.class = "same";
+            node.innerHTML = data["same"][pies[i]][j];
+            document.getElementById(pies[i] + "-same").appendChild(node);
+          }
+          for (let j = 0; j < data["different"][pies[i]].length; j++) {
+            var node = document.createElement("p");
+            node.class = "different";
+            node.innerHTML = data["different"][pies[i]][j];
+            document.getElementById(pies[i] + "-different").appendChild(node);
+          }
+
+        }
+      })
+    } else {
+      document.getElementById("school-compare").style.display = "none";
+    }
+  }
+</script>
+
+<script>
+  var schoolDetail = document.getElementById("school-detail");
+  Array.from(document.querySelectorAll("input.university")).forEach(
+    function (e) {
+      e.addEventListener('change', (event) => {
+        let card = document.createElement("div");
+        card.id = "school-" + event.target.value;
+        if (event.target.checked) {
+          //add something
+          fetch("/api/school/" + event.target.value).then(function (resp) {
+            return resp.json();
+          }).then(function (data) {
+            card.innerHTML = card.innerHTML = `
+              <div class="box" style="margin: 20px;">
+                <h2 class="title is-4">${data["name"]}</h2>
+                <p class="description">${data["description"]}</p>
+                <div class="columns">
+                  <div class="column is-one-third has-text-centered">
+                    <div class="columns" style="margin-bottom:40px;">
+                      <div class="column">
+                        <p class="title is-6">學生數</p>
+                        <p class="title is-3">${data["students"]}</p>
+                      </div>
+                      <div class="column">
+                        <p class="title is-6">專任教師</p>
+                        <p class="title is-3">${data["teachers"]}</p>
+                      </div>
+                      <div class="column">
+                        <p class="title is-6">生師比</p>
+                        <p class="title is-3">${(data["students"]/data["teachers"]).toFixed(1)}</p>
+                      </div>
+                    </div>
+                    <div class="columns">
+                      <div class="column is-half">
+                        <p class="title is-6">男女比</p>
+                        <canvas id="pie-${data["edu_id"]}"></canvas>
+                      </div>
+                      <div class="column">
+                        <p class="title is-6">註冊率</p>
+                        <p class="title is-3">${(data["register_rate"]).toFixed(1)}%</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="column">
+                    <div class="columns has-text-centered" style="margin-bottom:40px;">
+                      <div class="column">
+                        <p class="title is-6">全校總經費</p>
+                        <p class="title is-3">${data["funding"]}<span class="unit">百萬</span></p>
+                        
+                      </div>
+                      <div class="column">
+                        <p class="title is-6">承接計畫經費</p>
+                        <p class="title is-3">${data["project_funding"]}<span class="unit">百萬</span></p>
+                      </div>
+                      <div class="column">
+                        <p class="title is-6">校舍樓地板面積</p>
+                        <p class="title is-3">${data.building_area}<span class="unit">公頃</span></p>
+                        
+                      </div>
+                      <div class="column">
+                        <p class="title is-6">校地面積</p>
+                        <p class="title is-3">${data.campus_area}<span class="unit">公頃</span></p>
+                      </div>
+                    </div>
+
+                    <div class="columns has-text-centered">
+                      <div class="column">
+                        <p class="title is-6">領域</p>
+                        <p class="title is-3">${data["field"].length}</p>
+                      </div>
+                      <div class="column">
+                        <p class="title is-6">學門</p>
+                        <p class="title is-3">${data["discipline"].length}</p>
+                      </div>
+                      <div class="column">
+                        <p class="title is-6">學類</p>
+                        <p class="title is-3">${data["category"].length}</p>
+                      </div>
+                      <div class="column">
+                        <p class="title is-6">系所</p>
+                        <p class="title is-3">${data["department"].length}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>`
+            schoolDetail.appendChild(card);
+
+            var ctx = document.getElementById(`pie-${data["edu_id"]}`);
+            var myDoughnutChart = new Chart(ctx, {
+              type: 'doughnut',
+              data: {
+                datasets: [{
+                  data: [data["M_students"], data["F_students"]],
+                  backgroundColor: ["#66BB6A", "#ef5350"]
+                }],
+                labels: ["男", "女"],
+              },
+              options: {
+                responsive: true,
+                legend: {
+                  display: false,
+                }
+              }
+            });
+
+          })
+        } else {
+          let child = document.getElementById("school-" + event.target.value);
+          schoolDetail.removeChild(child);
+
+        }
+        selectedSchools();
+      })
+    }
+  )
+</script>
+
+<script>
+  function doughnutConfig(data1, data2) {
+    return {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [data1, data2],
+          backgroundColor: ["#66BB6A", "#ef5350"]
+        }],
+        labels: ["相同", "不同"],
+      },
+      options: {
+        responsive: true,
+        legend: {
+          display: false,
+        },
+        elements: {
+          center: {
+            text: ((data1 / (data1 + data2)) * 100).toFixed(1) + "%",
+            color: '#000', //Default black
+            sidePadding: 15 //Default 20 (as a percentage)
+          }
+        }
+      }
+    };
+  }
+</script>
+
+<script>
+  function toogleDetail() {
+
+    if (document.getElementById("detail").style.display == "flex") {
+      document.getElementById("detail").style.display = "none";
+    } else {
+      document.getElementById("detail").style.display = "flex";
+    }
+  }
+</script>
+<script>
+  Chart.pluginService.register({
+    beforeDraw: function (chart) {
+      if (chart.config.options.elements.center) {
+        //Get ctx from string
+        var ctx = chart.chart.ctx;
+
+        //Get options from the center object in options
+        var centerConfig = chart.config.options.elements.center;
+        var fontStyle = centerConfig.fontStyle || 'Arial';
+        var txt = centerConfig.text;
+        var color = centerConfig.color || '#000';
+        var sidePadding = centerConfig.sidePadding || 20;
+        var sidePaddingCalculated = (sidePadding / 100) * (chart.innerRadius * 2)
+        //Start with a base font of 30px
+        ctx.font = "40px " + fontStyle;
+
+        //Get the width of the string and also the width of the element minus 10 to give it 5px side padding
+        var stringWidth = ctx.measureText(txt).width;
+        var elementWidth = (chart.innerRadius * 2) - sidePaddingCalculated;
+
+        // Find out how much the font can grow in width.
+        var widthRatio = elementWidth / stringWidth;
+        var newFontSize = Math.floor(30 * widthRatio);
+        var elementHeight = (chart.innerRadius * 2);
+
+        // Pick a new font size so it will not be larger than the height of label.
+        var fontSizeToUse = Math.min(newFontSize, elementHeight);
+
+        //Set font settings to draw it correctly.
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        var centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+        var centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+        ctx.font = fontSizeToUse + "px " + fontStyle;
+        ctx.fillStyle = color;
+
+        //Draw text in center
+        ctx.fillText(txt, centerX, centerY);
+      }
+    }
+  });
+</script>
+
+{% endblock %}
