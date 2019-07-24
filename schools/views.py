@@ -2,7 +2,7 @@ import json
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from schools.models import University, Department
+from schools.models import University, Department, Grade
 
 
 def index(request):
@@ -41,8 +41,12 @@ def school(request, eid):
         "department": [d.name for d in u.department.all()],
         "field": list(set([d.field for d in u.department.all()])),
         "category": list(set([d.category for d in u.department.all()])),
-        "discipline": list(set([d.discipline for d in u.department.all()]))
+        "discipline": list(set([d.discipline for d in u.department.all()])),
     }
+    if Grade.objects.filter(university=u).exists():
+        data["grade"] = json.loads(Grade.objects.get(university=u).data)
+    else:
+        data["grade"] = [{"department": "無資料", "grade": "無資料"}]
     return JsonResponse(data)
 
 

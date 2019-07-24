@@ -149,6 +149,7 @@
           fetch("/api/school/" + event.target.value).then(function (resp) {
             return resp.json();
           }).then(function (data) {
+            console.log(data);
             card.innerHTML = card.innerHTML = `
               <div class="box" style="margin: 20px;">
                 <h2 class="title is-4">${data["name"]}</h2>
@@ -222,6 +223,15 @@
                     </div>
                   </div>
                 </div>
+                <a class="button is-info" onclick="toogleGrade('${data["edu_id"]}-grade')">最低錄取分數</a>
+                <div id="${data["edu_id"]}-grade" style="display:none;">
+                  <p style="color:tomato;margin:20px;">*107指考或108統測分發，括號內是平均。</p>
+                  <div class="columns">
+                    <div id="${data["edu_id"]}-grade-0" class="column"></div>
+                    <div id="${data["edu_id"]}-grade-1" class="column"></div>
+                    <div id="${data["edu_id"]}-grade-2" class="column"></div>
+                  </div>
+                </div>
               </div>`
             schoolDetail.appendChild(card);
 
@@ -242,6 +252,19 @@
                 }
               }
             });
+
+            // grade
+            for (let i = 0; i < data["grade"].length; i++) {
+              let node = document.createElement("p")
+              node.class = "grade";
+              node.innerHTML =
+                `<span class="department">${data["grade"][i]["department"]}</span> <span class="numbers">${data["grade"][i]["grade"]}</span>`
+              console.log(`${data["edu_id"]}-grade-${i+2%3}`);
+              document.getElementById(`${data["edu_id"]}-grade-${i%3}`).appendChild(node);
+            }
+
+
+
 
           })
         } else {
@@ -290,6 +313,14 @@
       document.getElementById("detail").style.display = "none";
     } else {
       document.getElementById("detail").style.display = "flex";
+    }
+  }
+
+  function toogleGrade(el) {
+    if (document.getElementById(el).style.display == "block") {
+      document.getElementById(el).style.display = "none";
+    } else {
+      document.getElementById(el).style.display = "block";
     }
   }
 </script>

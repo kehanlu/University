@@ -21,3 +21,11 @@ span.university {
 .navbar {
     margin-bottom: 20px;
 }
+
+span.department {
+    font-weight: 500;
+}
+
+span.numbers {
+    color: lightslategrey;
+}

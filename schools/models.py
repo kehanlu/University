@@ -39,3 +39,12 @@ class Department(models.Model):
 
     def __str__(self):
         return "[{}] {}".format(self.university.name, self.name)
+
+
+class Grade(models.Model):
+    university = models.ForeignKey(
+        University, on_delete=models.CASCADE, related_name="grade")
+    data = models.TextField()
+
+    def __str__(self):
+        return "{}".format(self.university.name)
