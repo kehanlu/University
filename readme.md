@@ -1,20 +1,17 @@
-Issues and PRs are welcome!
+Issues and PRs are welcome! 🍕
 
-## Contribution
+## Development
 
 ```shell
 git clone https://github.com/kehanlu/University.git
 cd University
-
 mv university/dev_settings.py university/settings.py
-```
 
-### Python env
-
-```shell
 pip install -r requirements.txt
 python manage.py migrate
 python shell < script.py # create base data
+```
 
+```shell
 python manage.py runserver
 ```
