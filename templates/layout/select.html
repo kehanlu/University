@@ -25,25 +25,29 @@
 
 <div class="content-tab" id="pub_u">
   {% for u in pub_u%}
-  <span class="university"><input type="checkbox" class="university" value="{{u.edu_id}}"> {{u.name}}</span>
+  <span class="university"><input class="university" type="checkbox" id="checkbox_{{u.edu_id}}" value="{{u.edu_id}}">
+    <label for="checkbox_{{u.edu_id}}">{{u.name}}</label></span>
   {% endfor %}
 </div>
 
 <div class="content-tab" id="pub_t" style="display: none">
   {% for u in pub_t%}
-  <span class="university"><input type="checkbox" class="university" value="{{u.edu_id}}"> {{u.name}}</span>
+  <span class="university"><input class="university" type="checkbox" id="checkbox_{{u.edu_id}}" value="{{u.edu_id}}">
+    <label for="checkbox_{{u.edu_id}}">{{u.name}}</label></span>
   {% endfor %}
 </div>
 
 <div class="content-tab" id="pri_u" style="display: none">
   {% for u in pri_u%}
-  <span class="university"><input type="checkbox" class="university" value="{{u.edu_id}}"> {{u.name}}</span>
+  <span class="university"><input class="university" type="checkbox" id="checkbox_{{u.edu_id}}" value="{{u.edu_id}}">
+    <label for="checkbox_{{u.edu_id}}">{{u.name}}</label></span>
   {% endfor %}
 </div>
 
 <div class="content-tab" id="pri_t" style="display: none">
   {% for u in pri_t%}
-  <span class="university"><input type="checkbox" class="university" value="{{u.edu_id}}"> {{u.name}}</span>
+  <span class="university"><input class="university" type="checkbox" id="checkbox_{{u.edu_id}}" value="{{u.edu_id}}">
+    <label for="checkbox_{{u.edu_id}}">{{u.name}}</label></span>
   {% endfor %}
 </div>
 
