@@ -1,1 +1,9 @@
+autopep8==1.4.4
 Django==2.2.3
+numpy==1.16.4
+pandas==0.25.0
+pycodestyle==2.5.0
+python-dateutil==2.8.0
+pytz==2019.1
+six==1.12.0
+sqlparse==0.3.0
