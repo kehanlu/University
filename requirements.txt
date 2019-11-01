@@ -1,5 +1,5 @@
 autopep8==1.4.4
-Django==2.2.3
+Django==2.2.4
 numpy==1.16.4
 pandas==0.25.0
 pycodestyle==2.5.0
