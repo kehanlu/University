@@ -6,4 +6,4 @@ pycodestyle==2.5.0
 python-dateutil==2.8.0
 pytz==2019.1
 six==1.12.0
-sqlparse==0.3.0
+sqlparse==0.4.4
